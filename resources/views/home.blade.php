@@ -2,7 +2,7 @@
 
 
 @section('titulo')
-    Principal
+    Principal:
 @endsection
 
 @section('contenido')
