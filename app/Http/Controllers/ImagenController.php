@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\Facades\Image;
 
 class ImagenController extends Controller
 {
@@ -15,14 +14,12 @@ class ImagenController extends Controller
         $imagen = $request->file('file');
 
         $nombreImagen = Str::uuid() . "." . $imagen->extension();
-        
-        $manager = new ImageManager(new Driver());
-        $imagenServidor = $manager::imagick()->read($imagen);
-        $imagenServidor->resizeDown(1000, 1000);
- 
+
+        $imagenServidor = Image::make($imagen);
+        $imagenServidor->fit(1000, 1000);
+
         $imagenPath = public_path('uploads') . '/' . $nombreImagen;
-        
-        $imagenServidor->toPng()->save($imagenPath);
+        $imagenServidor->save($imagenPath);
  
         return response()->json([
             'imagen' => $nombreImagen,

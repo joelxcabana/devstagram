@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
+use Intervention\Image\Facades\Image;
 use Intervention\Image\Drivers\Imagick\Driver;
 
 class PerfilController extends Controller
@@ -29,17 +30,15 @@ class PerfilController extends Controller
         ]);
 
         if($request->imagen){
-            $imagen = $request->imagen;
+            $imagen = $request->file('imagen');
 
             $nombreImagen = Str::uuid() . "." . $imagen->extension();
-            
-            $manager = new ImageManager(new Driver());
-            $imagenServidor = $manager::imagick()->read($imagen);
-            $imagenServidor->resizeDown(1000, 1000);
-     
+    
+            $imagenServidor = Image::make($imagen);
+            $imagenServidor->fit(1000, 1000);
+    
             $imagenPath = public_path('perfiles') . '/' . $nombreImagen;
-            
-            $imagenServidor->toPng()->save($imagenPath);
+            $imagenServidor->save($imagenPath);
         }
 
         $usuario = User::find(auth()->user()->id);
